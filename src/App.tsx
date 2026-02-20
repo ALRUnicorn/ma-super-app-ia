@@ -1,49 +1,22 @@
 import React, { useState } from 'react';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { UploadCloud, ShieldCheck, Loader2 } from 'lucide-react';
 
 export default function App() {
 const [image, setImage] = useState(null);
 const [analysis, setAnalysis] = useState("");
-const [loading, setLoading] = useState(false);
 
-const genAI = new GoogleGenerativeAI(import.meta.env.VITE_API_KEY);
-
-const handleImage = (e) => {
-const file = e.target.files?.[0];
-if (file) {
+return (
+<div style={{ padding: '40px', textAlign: 'center', fontFamily: 'sans-serif' }}>
+<h1 style={{ color: '#10b981' }}>Equi. Expertise</h1>
+<p>Chargez une radio pour l'analyse IA</p>
+<input type="file" onChange={(e) => {
+const file = e.target.files[0];
 const reader = new FileReader();
 reader.onloadend = () => setImage(reader.result);
 reader.readAsDataURL(file);
-}
-};
-
-const runAnalysis = async () => {
-if (!image) return;
-setLoading(true);
-try {
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-const base64Data = image.split(',')[1];
-const result = await model.generateContent([
-"Agis en expert vétérinaire équin. Analyse cette radio et identifie les anomalies potentielles.",
-{ inlineData: { data: base64Data, mimeType: "image/jpeg" } }
-]);
-setAnalysis(result.response.text());
-} catch (err) {
-setAnalysis("Erreur : Vérifiez votre clé API dans Vercel.");
-}
-setLoading(false);
-};
-
-return (
-<div style={{ minHeight: '100vh', backgroundColor: 'white', color: '#0f172a', padding: '20px', fontFamily: 'sans-serif' }}>
-<nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', maxWidth: '1000px', margin: '0 auto', borderBottom: '1px solid #f1f5f9', paddingBottom: '15px' }}>
-<div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-<div style={{ backgroundColor: '#10b981', color: 'white', padding: '5px 12px', borderRadius: '8px', fontWeight: 'bold', fontSize: '20px' }}>x</div>
-<span style={{ fontSize: '24px', fontWeight: 'bold' }}>Equi.</span>
+}} />
+{image && <img src={image} style={{ width: '300px', display: 'block', margin: '20px auto' }} />}
+<p style={{ marginTop: '20px' }}>{analysis || "Le diagnostic s'affichera ici."}</p>
 </div>
-<div style={{ color: '#10b981', backgroundColor: '#ecfdf5', padding: '5px 15px', borderRadius: '20px', fontSize: '12px', fontWeight: 'bold' }}>SÉCURISÉ</div>
-</nav>
-
 );
 }
